@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Linky - Save URLs</title>
+  <style>
+    body {
+      width: 300px;
+      font-family: Arial, sans-serif;
+      padding: 10px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    #status {
+      margin-top: 10px;
+      padding: 5px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+    #savedLinks {
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+    .saved-link {
+      margin-bottom: 5px;
+      word-break: break-all;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .settings-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .settings-btn img, .settings-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    .settings-btn:hover svg path {
+      fill: #4285f4;
+    }
+    .main-view, .settings-view {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .action-btn {
+      flex: 1;
+      margin: 0 5px;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .checkbox-container input {
+      margin-right: 8px;
+    }
+    .back-btn {
+      background-color: #ccc;
+      color: #333;
+    }
+    .sheet-input {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    .section {
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .sheet-status {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .connected {
+      color: green;
+    }
+    .not-connected {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Linky</h2>
+    <button class="settings-btn" id="settingsButton">
+      <img src="icons/settings.svg" alt="Settings">
+    </button>
+  </div>
+  
+  <div class="main-view active" id="mainView">
+    <div class="container">
+      <button id="saveButton">Save Current URL</button>
+      <div id="status"></div>
+      
+      <h3>Saved Links</h3>
+      <div id="savedLinks"></div>
+      
+      <div class="actions">
+        <button id="downloadCSV" class="action-btn">Download CSV</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="settings-view" id="settingsView">
+    <div class="container">
+      <h3>Settings</h3>
+      <div>
+        <h4>Manage Saved Links</h4>
+        <div id="manageLinks"></div>
+        
+        <div class="section">
+          <h4>Google Sheets Integration</h4>
+          <div>
+            <p class="sheet-status" id="sheetStatus">Not connected to any spreadsheet</p>
+            <label for="sheetId">Spreadsheet ID or URL:</label>
+            <input type="text" id="sheetId" class="sheet-input" placeholder="Paste Google Sheet ID or URL here">
+            <div class="actions">
+              <button id="connectSheet" class="action-btn">Connect</button>
+              <button id="disconnectSheet" class="action-btn back-btn" disabled>Disconnect</button>
+            </div>
+            <p class="small-text" style="font-size: 11px; color: #666; margin-top: 8px;">
+              The sheet must be shared with edit permissions.
+            </p>
+          </div>
+        </div>
+        
+        <div class="actions" style="margin-top: 20px;">
+          <button id="deleteSelected" class="action-btn">Delete Selected</button>
+          <button id="backButton" class="action-btn back-btn">Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="sheets-api.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
+
+
