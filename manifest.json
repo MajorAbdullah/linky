@@ -26,6 +26,10 @@
     "service_worker": "background.js"
   },
   "host_permissions": [
-    "https://sheets.googleapis.com/*"
+    "https://sheets.googleapis.com/*",
+    "https://*.firebaseio.com/*",
+    "https://*.firebaseapp.com/*",
+    "https://www.googleapis.com/auth/*",
+    "https://identitytoolkit.googleapis.com/*"
   ]
 }

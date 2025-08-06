@@ -34,6 +34,9 @@
     .error {
       color: red;
     }
+    .info {
+      color: blue;
+    }
     #savedLinks {
       margin-top: 10px;
       max-height: 200px;
@@ -93,7 +96,7 @@
       background-color: #ccc;
       color: #333;
     }
-    .sheet-input {
+    .sheet-input, .input-field {
       width: 100%;
       padding: 5px;
       margin-bottom: 10px;
@@ -114,6 +117,97 @@
     .not-connected {
       color: #888;
     }
+    .tab-container {
+      display: flex;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+    .tab {
+      padding: 8px 12px;
+      cursor: pointer;
+      background-color: #f2f2f2;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      margin-right: 5px;
+      border-radius: 4px 4px 0 0;
+      font-size: 12px;
+    }
+    .tab.active {
+      background-color: white;
+      border-bottom: 1px solid white;
+      margin-bottom: -1px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .mode-toggle {
+      display: flex;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .mode-toggle button {
+      flex: 1;
+      border: none;
+      background-color: #f2f2f2;
+      color: #333;
+      padding: 8px 0;
+      cursor: pointer;
+    }
+    .mode-toggle button.active {
+      background-color: #4285f4;
+      color: white;
+    }
+    #teamInfoArea {
+      background-color: #f9f9f9;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    #authForms {
+      display: none;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .auth-toggle {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .auth-toggle span {
+      margin: 0 5px;
+      color: #4285f4;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .label-column {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .help-text {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+      margin-bottom: 8px;
+    }
+    .setup-not-done {
+      background-color: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -126,6 +220,22 @@
   
   <div class="main-view active" id="mainView">
     <div class="container">
+      <!-- Firebase not configured warning -->
+      <div id="firebaseNotConfigured" class="setup-not-done">
+        <strong>Firebase not configured.</strong> Please go to Settings > Firebase Setup to configure your Firebase project.
+      </div>
+      
+      <!-- Mode toggle -->
+      <div class="mode-toggle">
+        <button id="personalModeBtn" class="active">Personal</button>
+        <button id="collaborativeModeBtn">Collaborative</button>
+      </div>
+
+      <!-- Team info display -->
+      <div id="teamInfoArea" style="display: none;">
+        <div id="teamInfo">Not connected to any team</div>
+      </div>
+      
       <button id="saveButton">Save Current URL</button>
       <div id="status"></div>
       
@@ -141,36 +251,192 @@
   <div class="settings-view" id="settingsView">
     <div class="container">
       <h3>Settings</h3>
-      <div>
+      
+      <!-- Setting Tabs -->
+      <div class="tab-container">
+        <div class="tab active" data-tab="manage">Manage Links</div>
+        <div class="tab" data-tab="collab">Collaboration</div>
+        <div class="tab" data-tab="connect">Sheets</div>
+        <div class="tab" data-tab="firebase">Firebase</div>
+      </div>
+      
+      <!-- Manage Links Tab -->
+      <div class="tab-content active" id="manage-tab">
         <h4>Manage Saved Links</h4>
         <div id="manageLinks"></div>
         
-        <div class="section">
-          <h4>Google Sheets Integration</h4>
-          <div>
-            <p class="sheet-status" id="sheetStatus">Not connected to any spreadsheet</p>
-            <label for="sheetId">Spreadsheet ID or URL:</label>
-            <input type="text" id="sheetId" class="sheet-input" placeholder="Paste Google Sheet ID or URL here">
-            <div class="actions">
-              <button id="connectSheet" class="action-btn">Connect</button>
-              <button id="disconnectSheet" class="action-btn back-btn" disabled>Disconnect</button>
-            </div>
-            <p class="small-text" style="font-size: 11px; color: #666; margin-top: 8px;">
-              The sheet must be shared with edit permissions.
-            </p>
+        <div class="actions" style="margin-top: 20px;">
+          <button id="deleteSelected" class="action-btn">Delete Selected</button>
+        </div>
+      </div>
+      
+      <!-- Collaboration Tab -->
+      <div class="tab-content" id="collab-tab">
+        <h4>Team Collaboration</h4>
+        
+        <!-- Firebase Not Configured Warning -->
+        <div id="firebaseNotConfiguredCollab" class="setup-not-done">
+          Firebase is not configured. Please go to the Firebase tab to set up your project.
+        </div>
+        
+        <!-- Not logged in state -->
+        <div id="notLoggedInCollab">
+          <p>You need to log in to use collaborative features.</p>
+          <div class="actions">
+            <button id="loginForCollab" class="action-btn">Log in</button>
+            <button id="loginAnonymously" class="action-btn">Use Anonymously</button>
           </div>
         </div>
         
-        <div class="actions" style="margin-top: 20px;">
-          <button id="deleteSelected" class="action-btn">Delete Selected</button>
-          <button id="backButton" class="action-btn back-btn">Back</button>
+        <!-- Authentication forms -->
+        <div id="authForms">
+          <!-- Login Form -->
+          <div id="loginForm">
+            <h4>Login</h4>
+            <input type="email" id="loginEmail" class="input-field" placeholder="Email">
+            <input type="password" id="loginPassword" class="input-field" placeholder="Password">
+            <button id="emailLoginBtn" class="action-btn">Login</button>
+            <div class="auth-toggle">
+              <span id="showSignupForm">Create an account</span>
+            </div>
+          </div>
+          
+          <!-- Signup Form -->
+          <div id="signupForm" style="display: none;">
+            <h4>Create Account</h4>
+            <input type="email" id="signupEmail" class="input-field" placeholder="Email">
+            <input type="password" id="signupPassword" class="input-field" placeholder="Password">
+            <input type="password" id="confirmPassword" class="input-field" placeholder="Confirm Password">
+            <button id="createAccountBtn" class="action-btn">Create Account</button>
+            <div class="auth-toggle">
+              <span id="showLoginForm">I already have an account</span>
+            </div>
+          </div>
         </div>
+        
+        <!-- Logged in state -->
+        <div id="loggedInCollab" style="display: none;">
+          <div id="logoutBtnContainer" class="actions" style="margin-bottom: 15px;">
+            <p>Logged in as: <span id="userEmailDisplay">Unknown</span></p>
+            <button id="logoutBtn" class="action-btn back-btn">Log out</button>
+          </div>
+          
+          <!-- No team -->
+          <div id="noTeam">
+            <div class="section">
+              <h4>Create Team</h4>
+              <input type="text" id="newTeamName" class="input-field" placeholder="Team name">
+              <button id="createTeamBtn" class="action-btn">Create Team</button>
+            </div>
+            
+            <div class="section">
+              <h4>Join Team</h4>
+              <input type="text" id="teamCodeInput" class="input-field" placeholder="Team code">
+              <button id="joinTeamBtn" class="action-btn">Join Team</button>
+            </div>
+          </div>
+          
+          <!-- Has team -->
+          <div id="hasTeam" style="display: none;">
+            <h4>Current Team: <span id="teamName">Loading...</span></h4>
+            <p>Share this code with others to let them join your team:</p>
+            <div style="display: flex; margin-bottom: 15px;">
+              <input type="text" id="currentTeamCode" class="input-field" readonly>
+              <button id="copyTeamCode" class="action-btn" style="margin-left: 5px; flex-shrink: 0;">Copy</button>
+            </div>
+            <div class="actions">
+              <button id="leaveTeamBtn" class="action-btn back-btn">Leave Team</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Connect Google Sheets Tab -->
+      <div class="tab-content" id="connect-tab">
+        <h4>Google Sheets Integration</h4>
+        <div>
+          <p class="sheet-status" id="sheetStatus">Not connected to any spreadsheet</p>
+          <label for="sheetId">Spreadsheet ID or URL:</label>
+          <input type="text" id="sheetId" class="sheet-input" placeholder="Paste Google Sheet ID or URL here">
+          <div class="actions">
+            <button id="connectSheet" class="action-btn">Connect</button>
+            <button id="disconnectSheet" class="action-btn back-btn" disabled>Disconnect</button>
+          </div>
+          <p class="small-text" style="font-size: 11px; color: #666; margin-top: 8px;">
+            The sheet must be shared with edit permissions.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Firebase Setup Tab -->
+      <div class="tab-content" id="firebase-tab">
+        <h4>Firebase Configuration</h4>
+        <p>Set up your Firebase project for collaboration features:</p>
+        
+        <div id="firebaseSetupForm">
+          <div class="label-column">Project API Key:</div>
+          <input type="text" id="fbApiKey" class="input-field" placeholder="e.g., AIzaSyA1B2C3D4E5F6G7H8I9J0K1L2M3">
+          <div class="help-text">Find this in your Firebase project settings</div>
+          
+          <div class="label-column">Auth Domain:</div>
+          <input type="text" id="fbAuthDomain" class="input-field" placeholder="your-project-id.firebaseapp.com">
+          
+          <div class="label-column">Project ID:</div>
+          <input type="text" id="fbProjectId" class="input-field" placeholder="your-project-id">
+          
+          <div class="label-column">Storage Bucket (optional):</div>
+          <input type="text" id="fbStorageBucket" class="input-field" placeholder="your-project-id.appspot.com">
+          
+          <div class="label-column">Messaging Sender ID (optional):</div>
+          <input type="text" id="fbMessagingSenderId" class="input-field" placeholder="123456789012">
+          
+          <div class="label-column">App ID:</div>
+          <input type="text" id="fbAppId" class="input-field" placeholder="1:123456789012:web:abc123def456">
+          
+          <div class="label-column">Database URL:</div>
+          <input type="text" id="fbDatabaseURL" class="input-field" placeholder="https://your-project-id.firebaseio.com">
+          
+          <div class="actions" style="margin-top: 15px;">
+            <button id="saveFirebaseConfig" class="action-btn">Save Configuration</button>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h4>Firebase Status</h4>
+          <div id="firebaseStatus" class="sheet-status not-connected">Not configured</div>
+          <p class="help-text">
+            Need help? <a href="https://firebase.google.com/docs/web/setup" target="_blank">How to find Firebase configuration</a>
+          </p>
+        </div>
+      </div>
+      
+      <div class="actions" style="margin-top: 20px;">
+        <button id="backButton" class="action-btn back-btn">Back</button>
       </div>
     </div>
   </div>
 
+  <script src="firebase-api.js"></script>
   <script src="sheets-api.js"></script>
+  <script src="collaborative-firebase.js"></script>
   <script src="popup.js"></script>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.getAttribute('data-tab');
+        
+        // Deactivate all tabs and content
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Activate selected tab and content
+        tab.classList.add('active');
+        document.getElementById(tabName + '-tab').classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
 
