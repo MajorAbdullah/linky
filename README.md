@@ -1,172 +1,159 @@
-# Linky - URL Bookmark Manager Chrome Extension
+# Linky -- URL Bookmark Manager
 
-## Overview
-Linky is a Chrome extension that helps you save and manage links from websites you visit. It provides a simple way to bookmark URLs with just one click and offers convenient features like Google Sheets integration and CSV export.
+**A Chrome extension for saving, managing, and collaborating on bookmarked links**
+
+Linky lets you save the current tab's URL with a single click and keep all your bookmarks organized in one place. It goes beyond basic bookmarking by integrating with Google Sheets for automatic link syncing and Firebase Realtime Database for real-time team collaboration.
+
+---
+
+## Tech Stack
+
+![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Firebase](https://img.shields.io/badge/Firebase-Realtime_DB-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Google Sheets](https://img.shields.io/badge/Google_Sheets-API-0F9D58?style=for-the-badge&logo=googlesheets&logoColor=white)
+
+---
 
 ## Features
 
 ### Core Features
-- **One-Click Bookmarking**: Save the current tab's URL and title with a single click
-- **Link Management**: View all your saved links in an organized list
-- **Bulk Delete**: Select and delete multiple saved links at once
-- **CSV Export**: Download all your saved links as a CSV file
-- **Google Sheets Integration**: Automatically sync saved links to a Google Spreadsheet
-- **Team Collaboration**: Share links with team members using Firebase integration
+- **One-Click Bookmarking** -- save the current tab's URL and title instantly
+- **Link Management** -- view all saved links in an organized, scrollable list
+- **Bulk Delete** -- select and remove multiple saved links at once via the settings panel
+- **CSV Export** -- download all saved links as a dated CSV file
+- **Duplicate Prevention** -- automatically skips URLs that are already saved
+- **Date Tracking** -- each link records the date it was saved
 
-### Technical Features
-- Stores links locally in Chrome's storage
-- Uses OAuth 2.0 for secure Google Sheets authentication
-- Firebase integration for collaborative features
-- Responsive popup interface with settings panel
-- Automatic duplicate prevention
+### Google Sheets Integration
+- **Automatic Sync** -- every saved link is simultaneously added to a connected Google Sheet
+- **OAuth 2.0 Authentication** -- secure access using Chrome's identity API
+- **Auto-Setup** -- creates a "Links" sheet with column headers (Title, URL, Date, Notes) if it does not exist
+- **Connect / Disconnect** -- easily link or unlink a Google Sheet from the settings panel
+
+### Team Collaboration (Firebase)
+- **Real-Time Shared Links** -- team members see each other's saved links instantly
+- **Team Management** -- create a new team or join an existing one with a team code
+- **User Attribution** -- each shared link shows who added it and when
+- **Personal / Collaborative Mode Toggle** -- switch between personal bookmarks and team links
+- **Configurable Firebase** -- enter your own Firebase project credentials directly in the extension settings
+- **Email and Anonymous Login** -- flexible authentication options for team members
+
+---
 
 ## Installation
 
-### From Source Code
-1. Download or clone this repository to your local machine
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" using the toggle in the top-right corner
-4. Click "Load unpacked" and select the downloaded `linky` folder
-5. The Linky icon should now appear in your browser's toolbar
+### From Source
 
-## How to Use
+1. Clone or download this repository:
+   ```bash
+   git clone https://github.com/MajorAbdullah/linky.git
+   ```
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable **Developer mode** using the toggle in the top-right corner
+4. Click **Load unpacked** and select the `linky` folder
+5. The Linky icon will appear in your browser toolbar
+
+---
+
+## Usage
 
 ### Saving Links
 1. Navigate to any webpage you want to save
 2. Click the Linky icon in your browser toolbar
-3. Click the "Save Current URL" button
-4. The link is now saved locally and will appear in your list
+3. Click the **Save Current URL** button
+4. The link is saved locally and appears in your list (and syncs to Google Sheets / team if connected)
 
 ### Managing Links
-1. Click the Linky icon to open the extension popup
-2. All your saved links will be displayed in a scrollable list
-3. Click on any link to open it in a new tab
-4. Click the settings icon (⚙️) to access link management features
-
-### Deleting Links
-1. In the extension popup, click the settings icon
-2. Check the boxes next to the links you want to delete
-3. Click the "Delete Selected" button
-4. The selected links will be permanently removed
+1. Click the Linky icon to open the popup
+2. All saved links are displayed in a scrollable list -- click any link to open it in a new tab
+3. Click the settings icon to access the management panel for bulk deletion
 
 ### Exporting Links as CSV
-1. In the main view of the extension, click the "Download CSV" button
-2. A CSV file containing all your saved links will be downloaded
-3. The file will be named "linky_saved_links_YYYY-MM-DD.csv" with the current date
+1. In the main popup view, click the **Download CSV** button
+2. A CSV file named `linky_saved_links_YYYY-MM-DD.csv` is downloaded with all your saved links
 
-### Google Sheets Integration
+### Setting Up Google Sheets Integration
+1. Create a Google Sheet or use an existing one (ensure it is shared with edit permissions)
+2. Copy the Sheet URL
+3. In the extension settings panel, paste the URL and click **Connect**
+4. Authorize the extension when prompted
+5. All future saved links will be synced to the sheet automatically
 
-#### Setting Up Google Sheets Integration
-1. Create a Google Sheet or use an existing one
-2. Make sure the sheet is shared with edit permissions
-3. Copy the URL of your Google Sheet
-4. In the extension, click the settings icon
-5. Paste your Google Sheet URL in the text field
-6. Click "Connect"
-7. When prompted, allow the extension to access your Google Sheets
-
-#### How the Google Sheets Integration Works
-1. When you connect a Google Sheet, Linky will:
-   - Verify your access permissions
-   - Create a "Links" sheet if it doesn't exist
-   - Add column headers (Title, URL, Date, Notes)
-2. Every time you save a link in Linky:
-   - The link is stored locally in Chrome
-   - The link is also added to your connected Google Sheet
-3. You can disconnect at any time via the settings page
-
-### Firebase Setup for Collaboration Features
-
-#### Creating a Firebase Project
-1. Go to the [Firebase Console](https://console.firebase.google.com/)
-2. Click "Add project" and follow the steps to create a new project
-3. Give your project a name (e.g., "Linky Extension")
-4. Enable Google Analytics if you want (optional)
-5. Click "Create project"
-
-#### Setting Up Firebase Realtime Database
-1. In your Firebase project dashboard, click "Build" in the left sidebar
-2. Select "Realtime Database"
-3. Click "Create database"
-4. Start in test mode (you can adjust security rules later)
-5. Choose a database location close to your users
-
-#### Adding Firebase to Linky Extension
-1. In your Firebase project, click the gear icon (⚙️) next to "Project Overview"
-2. Select "Project settings"
-3. Scroll down to "Your apps" and click the web icon (</>) 
-4. Register your app with a nickname (e.g., "Linky Extension")
-5. Copy the Firebase configuration object (it contains apiKey, authDomain, etc.)
-
-#### Configuring Firebase in Linky Extension
-1. Open the Linky extension popup
-2. Click the settings icon (⚙️)
-3. Go to the "Firebase" tab
-4. Fill in the following fields from your Firebase config:
+### Setting Up Firebase for Team Collaboration
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com/)
+2. Enable **Realtime Database** (start in test mode)
+3. Enable **Authentication** (Email/Password)
+4. Register a web app and copy the configuration values
+5. In the Linky settings panel, go to the **Firebase** tab and fill in:
    - Project API Key
    - Auth Domain
    - Project ID
    - App ID
    - Database URL
-5. Click "Save Configuration"
-6. The extension will update and you'll see "Firebase configured" message
+6. Click **Save Configuration** -- the extension will reload with Firebase enabled
+7. Switch to **Collaborative** mode, log in, and create or join a team
 
-#### Using Team Collaboration
-1. Make sure Firebase is configured properly
-2. In the main extension view, click "Collaborative" mode
-3. Log in with your email or use anonymous login
-4. Create a new team or join an existing team with a team code
-5. Once in a team, all saved links will be shared with team members
+---
 
-## Technical Details
+## File Structure
 
-### File Structure
-- `manifest.json`: Extension configuration and permissions
-- `popup.html`: UI structure for the extension popup
-- `popup.js`: Main JavaScript functionality for user interactions
-- `background.js`: Background script for extension initialization
-- `sheets-api.js`: Handles Google Sheets API integration
-- `firebase-api.js`: Handles Firebase integration for collaboration
-- `collaborative-firebase.js`: Implements team collaboration features
-- `icons/`: Contains extension icons in various sizes
+```
+linky/
+├── manifest.json              # Chrome extension manifest (v3)
+├── popup.html                 # Popup UI structure
+├── popup.js                   # Main popup logic (save, display, manage links)
+├── background.js              # Service worker for extension initialization
+├── sheets-api.js              # Google Sheets API integration
+├── firebase-api.js            # Firebase initialization and configuration
+├── collaborative-firebase.js  # Team collaboration features (create/join teams, shared links)
+├── collaborative.js           # Collaboration mode toggle logic
+├── icons/
+│   ├── icon16.png
+│   ├── icon48.png
+│   ├── icon128.png
+│   ├── settings.png
+│   └── settings.svg
+└── README.md
+```
 
-### Storage
-- Links are stored in Chrome's local storage
-- Each link contains:
-  - URL
-  - Page title
-  - Date saved
-- Team links are stored in Firebase Realtime Database
-- Firebase configuration is stored in Chrome's local storage
+---
 
-### Permissions
-- `activeTab`: To access current tab information
-- `storage`: To store saved links
-- `identity`: For Google OAuth authentication
-- Access to `sheets.googleapis.com`: For Google Sheets API connectivity
-- Access to `*.firebaseio.com` and related domains: For Firebase functionality
+## Permissions
+
+| Permission | Purpose |
+|-----------|---------|
+| `activeTab` | Access current tab URL and title for bookmarking |
+| `storage` | Persist saved links and configuration in Chrome local storage |
+| `identity` | OAuth 2.0 authentication for Google Sheets API |
+| `sheets.googleapis.com` | Read/write access to connected Google Sheets |
+| `*.firebaseio.com` | Firebase Realtime Database for team collaboration |
+| `identitytoolkit.googleapis.com` | Firebase Authentication |
+
+---
 
 ## Troubleshooting
 
-### Common Issues
+### Google Sheets Connection Fails
+- Verify the Google Sheet is shared with edit permissions
+- Confirm you are signed into Chrome with the same Google account that owns or has access to the sheet
+- Make sure you granted permissions when the OAuth prompt appeared
 
-#### Google Sheets Connection Fails
-- Make sure the Google Sheet is shared with edit permissions
-- Check that you're signed in to Chrome with the same Google account that owns or has access to the sheet
-- Verify that you've allowed the necessary permissions when prompted
+### Firebase Configuration Issues
+- Ensure all required fields (API Key, Auth Domain, Project ID, App ID, Database URL) are filled correctly
+- Verify that the Firebase Realtime Database has been created and is accessible
+- Check that Authentication is enabled for Email/Password in the Firebase console
 
-#### Firebase Configuration Issues
-- Ensure all required Firebase configuration fields are filled correctly
-- Check that the Firebase Realtime Database is created and accessible
-- Verify that the Firebase project has Authentication enabled for Email/Password
-- If team features don't work, check the Firebase console for any error messages
+### Links Not Saving
+- The extension prevents duplicate URLs -- verify the link is not already saved
+- Ensure sufficient browser storage space is available
 
-#### Links Not Saving
-- Check if the link is already saved (duplicates are prevented)
-- Make sure you have sufficient storage space in your browser
-
-## Support and Development
-This extension was created as a personal project. Feel free to fork and extend its functionality according to your needs.
+---
 
 ## License
-MIT License - Feel free to use, modify, and distribute as needed.
+
+MIT License -- feel free to use, modify, and distribute.
+
+## Author
+
+**Syed Abdullah Shah** -- [@MajorAbdullah](https://github.com/MajorAbdullah)
